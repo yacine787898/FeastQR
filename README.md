@@ -1,18 +1,26 @@
 # FeastQR: Open Source SaaS Online Menu System 🌐
 
-## cPanel-ready deployment
+This fork is adapted to run on **cPanel Node.js Application** hosting with a required startup file (`app.js`).
 
-This fork is adapted to run on **cPanel Node.js Application** hosting.
+## Quick audit of this codebase (for deployment decisions)
 
-### What changed
-- Added a single startup file: `app.js`.
-- Production startup now uses `node app.js`.
-- Build now runs `prisma generate && next build`.
-- Added cPanel deployment playbook with troubleshooting.
+- **Framework**: Next.js 14 + App Router (`src/app`).
+- **Server features in use**: route handlers (`src/app/api/*`), middleware (`src/middleware.ts`), dynamic/authenticated pages.
+- **Data/Auth**: Supabase + Prisma.
+- **Conclusion**: full static export is only a fallback; the primary deployment target is Node runtime (`node app.js`).
 
-👉 Full guide: [`docs/CPANEL_DEPLOY.md`](docs/CPANEL_DEPLOY.md)
+## Required project layout at runtime
 
-## Quick start (local)
+Your deployment folder must contain these entries at its root:
+
+- `package.json`
+- `app.js`
+- `next.config.mjs`
+- `src/`
+- `public/`
+- `prisma/`
+
+## Local quick start
 
 ```bash
 npm install
@@ -21,9 +29,17 @@ npm run build
 PORT=3000 npm run start
 ```
 
-## Stack
-- Next.js 14 (App Router)
-- tRPC route handlers
-- Supabase (auth/storage)
-- Prisma + Postgres
-- Tailwind + shadcn/ui
+## cPanel deployment (step-by-step)
+
+Use the full runbook here:
+
+👉 [`docs/CPANEL_DEPLOY.md`](docs/CPANEL_DEPLOY.md)
+
+This includes:
+- Node version guidance
+- exact cPanel setup values
+- upload strategy (including ZIP extraction pitfalls)
+- env variable mapping
+- startup/restart instructions
+- Prisma compatibility notes
+- troubleshooting (including `ENOENT package.json`)

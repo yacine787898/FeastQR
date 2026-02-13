@@ -2,6 +2,28 @@
 
 This repository is now structured to run on cPanel using a **single startup file** (`app.js`) and standard npm scripts.
 
+
+## 0) Common packaging pitfall (VERY IMPORTANT)
+
+If you downloaded a ZIP and immediately ran `npm install` in Windows/terminal, the error below means you are in the wrong folder:
+
+```
+npm ERR! enoent Could not read package.json
+```
+
+This project **must** be run from the directory that actually contains `package.json`.
+
+Quick checks:
+
+```bash
+pwd
+ls
+```
+
+You should see `package.json` in the output. If you do not:
+- open the extracted folder and go one level deeper (GitHub ZIP often creates a top-level wrapper folder), or
+- re-upload/extract so your cPanel **Application root** points to the folder containing `package.json` and `app.js`.
+
 ## 1) Technical audit (before migration)
 
 ### Stack identified in this repository
@@ -52,6 +74,16 @@ Upload the repository contents to the Application root, including:
 - lockfile (`pnpm-lock.yaml` is optional if you use npm in cPanel)
 
 Do **not** upload secrets in `.env`.
+
+After upload/extract, verify root correctness in cPanel terminal:
+
+```bash
+cd /home/<cpanel_user>/feastqr
+pwd
+ls
+```
+
+The listing must include `package.json` and `app.js`. If not, fix Application root or move files before running npm commands.
 
 ## 5) Install and build in cPanel
 
@@ -111,6 +143,12 @@ The server logs a clear line at boot:
 ### "Not Found" on root URL
 - Verify **Application URL** and **Application root** in cPanel match your upload location.
 - Restart the Node.js app after changes.
+
+### `npm ERR! enoent Could not read package.json`
+- You are not in the project root.
+- Run `pwd` and `ls` and ensure `package.json` is present.
+- In cPanel, set **Application root** to the folder that contains `package.json` + `app.js`.
+- If deploying from ZIP, ensure you did not keep an extra nested wrapper directory.
 
 ### Port binding errors
 - Ensure app uses `process.env.PORT` (already handled in `app.js`).
